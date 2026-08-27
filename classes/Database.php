@@ -1,22 +1,66 @@
 <?php
+/**
+ * Database connection.
+ *
+ * Credentials come from environment variables so the same code runs on
+ * XAMPP locally and on a hosted platform (Render / Railway / etc).
+ * If the env vars are absent it falls back to the classic XAMPP defaults.
+ *
+ *   DB_HOST    hostname            (default: localhost)
+ *   DB_PORT    port                (default: 3306)
+ *   DB_NAME    database name       (default: triv_db)
+ *   DB_USER    username            (default: root)
+ *   DB_PASS    password            (default: empty)
+ *   DB_SSL     "1" to require TLS  (needed by Aiven, TiDB Cloud, PlanetScale)
+ *   DB_SSL_CA  path to a CA bundle (optional; used when DB_SSL=1)
+ */
 class Database {
-    private $host = "localhost";
-    private $db_name = "triv_db";
-    private $username = "root";
-    private $password = "";
     private $conn;
 
+    private static function env($key, $default = null) {
+        $val = getenv($key);
+        if ($val === false || $val === '') {
+            $val = $_ENV[$key] ?? $_SERVER[$key] ?? false;
+        }
+        return ($val === false || $val === '') ? $default : $val;
+    }
+
     public function connect() {
+        if ($this->conn instanceof PDO) {
+            return $this->conn;
+        }
+
+        $host = self::env('DB_HOST', 'localhost');
+        $port = self::env('DB_PORT', '3306');
+        $name = self::env('DB_NAME', 'triv_db');
+        $user = self::env('DB_USER', 'root');
+        $pass = self::env('DB_PASS', '');
+
+        $dsn = "mysql:host={$host};port={$port};dbname={$name};charset=utf8mb4";
+
+        $options = [
+            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES   => false,
+        ];
+
+        if (self::env('DB_SSL') === '1') {
+            $ca = self::env('DB_SSL_CA');
+            if ($ca && is_readable($ca)) {
+                $options[PDO::MYSQL_ATTR_SSL_CA] = $ca;
+            } else {
+                // Encrypt in transit even without a pinned CA bundle.
+                $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = false;
+            }
+        }
+
         try {
-            $this->conn = new PDO(
-                "mysql:host=$this->host;dbname=$this->db_name",
-                $this->username,
-                $this->password
-            );
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->conn = new PDO($dsn, $user, $pass, $options);
             return $this->conn;
         } catch (PDOException $e) {
-            die("Database connection failed: " . $e->getMessage());
+            error_log('Database connection failed: ' . $e->getMessage());
+            http_response_code(500);
+            die('Database connection failed. Please try again later.');
         }
     }
 }
@@ -349,13 +393,29 @@ class Service {
     // Generate slug from title
     public function generateSlug($title) {
         $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $title)));
-        return $slug;
+        $slug = trim($slug, '-');
+        return $slug !== '' ? $slug : 'service';
+    }
+
+    /**
+     * Reduce a slug to a safe filename fragment. Guards the generated-page
+     * writer against path traversal even if a slug ever reaches it unfiltered.
+     */
+    private static function safeSlug($slug) {
+        $slug = preg_replace('/[^a-z0-9-]/', '', strtolower((string) $slug));
+        $slug = trim($slug, '-');
+        return $slug !== '' ? $slug : null;
     }
 
     // Generate service page file
     public function generateServicePage($title, $description, $short_description, $slug, $image = null, $banner_image = null) {
+        $slug = self::safeSlug($slug);
+        if ($slug === null) {
+            error_log('generateServicePage: refusing to write page for empty/invalid slug');
+            return false;
+        }
         $fileName = "services_" . $slug . ".php";
-        $filePath = "../public/" . $fileName;
+        $filePath = __DIR__ . "/../public/" . $fileName;
         
         // Define process steps based on service type
         $processSteps = $this->getProcessSteps($slug);
@@ -365,17 +425,25 @@ class Service {
         $content = $this->generatePageContent($title, $description, $short_description, $slug, $image, $banner_image, $processSteps, $ctaData);
         
         // Write file
-        file_put_contents($filePath, $content);
+        if (@file_put_contents($filePath, $content) === false) {
+            error_log("generateServicePage: could not write {$filePath} (read-only or ephemeral filesystem?)");
+            return false;
+        }
+        return true;
     }
 
     // Delete service page file
     public function deleteServicePage($slug) {
-        $fileName = "services_" . $slug . ".php";
-        $filePath = "../public/" . $fileName;
-        
-        if (file_exists($filePath)) {
-            unlink($filePath);
+        $slug = self::safeSlug($slug);
+        if ($slug === null) {
+            return false;
         }
+        $filePath = __DIR__ . "/../public/services_" . $slug . ".php";
+
+        if (file_exists($filePath)) {
+            return @unlink($filePath);
+        }
+        return true;
     }
 
     // Get process steps for different service types
@@ -837,8 +905,9 @@ class User {
 
     public function getRecentUsers($limit = 5) {
         try {
-            $stmt = $this->conn->prepare("SELECT id, name, email, role, status, created_at FROM {$this->table} ORDER BY created_at DESC LIMIT ?");
-            $stmt->execute([$limit]);
+            $limit = max(1, (int) $limit);
+            $stmt = $this->conn->prepare("SELECT id, name, email, role, status, created_at FROM {$this->table} ORDER BY created_at DESC LIMIT {$limit}");
+            $stmt->execute();
             return $stmt->fetchAll();
         } catch (PDOException $e) {
             error_log("Get recent users error: " . $e->getMessage());
@@ -968,9 +1037,9 @@ class ContactInquiry {
                     FROM {$this->table} ci 
                     LEFT JOIN users u ON ci.user_id = u.id 
                     ORDER BY ci.created_at DESC 
-                    LIMIT ?";
+                    LIMIT " . max(1, (int) $limit);
             $stmt = $this->conn->prepare($sql);
-            $stmt->execute([$limit]);
+            $stmt->execute();
             return $stmt->fetchAll();
         } catch (PDOException $e) {
             error_log("Get recent inquiries error: " . $e->getMessage());
@@ -1153,9 +1222,8 @@ class JobApplication {
                 FROM " . $this->table . " ja 
                 LEFT JOIN jobs j ON ja.job_id = j.id 
                 ORDER BY ja.created_at DESC 
-                LIMIT :limit";
+                LIMIT " . max(1, (int) $limit);
         $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll();
     }

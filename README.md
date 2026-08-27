@@ -19,11 +19,19 @@ Go to the Import tab.
 Upload and execute triv_db.sql.
 
 ### 🔐 2. Admin Login Credentials
-Use the following credentials to access the admin panel:
+The seed data in `triv_db.sql` ships with a default admin account
+(`admin@triv.com`). **Change its password immediately after importing** —
+especially before deploying anywhere public:
 
-Email: admin@triv.com
+```sql
+UPDATE users
+SET password = '<output of PHP password_hash()>'
+WHERE email = 'admin@triv.com';
+```
 
-Password: admin1234
+```bash
+php -r "echo password_hash('your-new-password', PASSWORD_DEFAULT);"
+```
 
 
 ### 🌐 4. Run the Application
@@ -70,6 +78,13 @@ The project implements core OOP principles in PHP to ensure maintainability and 
 - **Encapsulation**: Sensitive data (e.g., credentials, session tokens) and critical logic are encapsulated within private/protected methods and accessed via controlled interfaces.
 
 This structure provides better security, cleaner code, and a modular architecture.
+
+## ☁️ Deployment
+See **[DEPLOY.md](DEPLOY.md)** for hosting this on Render, Railway, or any
+Docker host, including the free-tier MySQL setup. Database credentials are
+read from environment variables (`DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`,
+`DB_PASS`, `DB_SSL`) and fall back to XAMPP defaults when unset — see
+`.env.example`.
 
 ## ⚙️ Technology Stack
 - **PHP** (OOP, backend logic)

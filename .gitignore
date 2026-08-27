@@ -1,0 +1,19 @@
+# OS junk
+.DS_Store
+**/.DS_Store
+Thumbs.db
+
+# Local env / secrets
+.env
+.env.local
+
+# User-uploaded content (regenerated at runtime, not source)
+uploads/plans/*
+uploads/resumes/*
+!uploads/plans/.gitkeep
+!uploads/resumes/.gitkeep
+
+# Editor / tooling
+.vscode/
+.idea/
+*.log

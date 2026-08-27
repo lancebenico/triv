@@ -15,7 +15,7 @@ body {
 .left-panel {
  flex: 1;
  background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0,
-0.7)), url("pexels-pixabay-159045.jpg");
+0.7)), url("../assets/images/construction-bg.jpg");
  background-size: cover;
  background-position: left;
  color: white;

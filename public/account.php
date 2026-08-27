@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once '../classes/Database.php';
-require_once '../classes/auth.php';
+require_once '../classes/Auth.php';
 
 
 // Check if user is logged in
