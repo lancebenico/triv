@@ -34,7 +34,7 @@ php -r "echo password_hash('your-new-password', PASSWORD_DEFAULT);"
 ```
 
 
-### 🌐 4. Run the Application
+### 🌐 3. Run the Application
 Place the project folder inside the htdocs directory of XAMPP.
 
 Access the website via your browser at:
