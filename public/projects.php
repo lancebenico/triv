@@ -23,6 +23,7 @@ $interiorProjects = $project->getByCategory('interior-design');
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TRIV Design & Construction</title>
+    <link rel="icon" type="image/png" href="../assets/images/favicon.png">
     <link rel="stylesheet" href="../assets/css/public-style.css">
    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -31,9 +32,6 @@ $interiorProjects = $project->getByCategory('interior-design');
 </head>
 <body>
 <header>
-    <div class="logo">
-        <img src="../assets/images/trivfinalnatalaga.png" alt="TRIV Design & Construction">
-    </div>
     <!-- Hamburger menu that shows nav on hover -->
     <button class="menu-toggle" aria-label="Toggle menu">☰</button>
    <nav>

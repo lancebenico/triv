@@ -59,6 +59,7 @@ header {
 
 /* Hamburger menu button - always visible */
 .menu-toggle {
+  margin-left: auto;
   display: block; /* Always visible, not just on mobile */
   background: none;
   border: none;

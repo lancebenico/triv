@@ -32,15 +32,13 @@ if (!$jobDetails) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Job Details - TRIV Design & Construction</title>
+    <link rel="icon" type="image/png" href="../assets/images/favicon.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/public-style.css">
 </head>
 <body>
 <header>
-    <div class="logo">
-        <img src="../assets/images/trivfinalnatalaga.png" alt="TRIV Design & Construction">
-    </div>
     <!-- Make sure the button is OUTSIDE the nav element -->
     <button class="menu-toggle" aria-label="Toggle menu">☰</button>
   <nav>

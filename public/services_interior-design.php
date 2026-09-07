@@ -8,6 +8,7 @@ require_once '../classes/Auth.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interior Design Services | TRIV Design and Construction</title>
+    <link rel="icon" type="image/png" href="../assets/images/favicon.png">
     <link rel="stylesheet" href="../assets/css/public-style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -20,9 +21,6 @@ require_once '../classes/Auth.php';
     </a>
 </div>
 
-    <div class="logo">
-        <img src="../assets/images/trivfinalnatalaga.png" alt="TRIV Design & Construction">
-    </div>
     <!-- Make sure the button is OUTSIDE the nav element -->
     <button class="menu-toggle" aria-label="Toggle menu">☰</button>
     <nav>
