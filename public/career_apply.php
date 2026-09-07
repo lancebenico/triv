@@ -54,6 +54,9 @@ if (isset($_GET['success'])) {
 </head>
 <body>
 <header>
+    <div class="logo">
+        <img src="../assets/images/trivfinalnatalaga.png" alt="TRIV Design & Construction">
+    </div>
     <!-- Make sure the button is OUTSIDE the nav element -->
     <button class="menu-toggle" aria-label="Toggle menu">☰</button>
     <nav>

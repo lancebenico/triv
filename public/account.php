@@ -404,6 +404,9 @@ footer {
 </head>
 <body>
     <header class="header">
+    <div class="logo">
+        <img src="../assets/images/trivfinalnatalaga.png" alt="TRIV Design & Construction">
+    </div>
         <div class="user-info">
             Welcome, <?= htmlspecialchars($userInfo['name']) ?>
                <button class="menu-toggle" aria-label="Toggle menu">☰</button>

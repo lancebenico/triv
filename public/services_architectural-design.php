@@ -24,7 +24,10 @@ require_once '../classes/Auth.php';
     </a>
 </div>
 
-    <!-- Make sure the button is OUTSIDE the nav element -->
+    
+    <div class="logo">
+        <img src="../assets/images/trivfinalnatalaga.png" alt="TRIV Design & Construction">
+    </div>
     <button class="menu-toggle" aria-label="Toggle menu">☰</button>
     <nav>
         <ul>

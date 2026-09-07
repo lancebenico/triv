@@ -35,7 +35,10 @@ $interiorProjects = $project->getByCategory('interior-design');
 </head>
 <body>
 <header>
-    <!-- Hamburger menu that shows nav on hover -->
+    <div class="logo">
+        <img src="../assets/images/trivfinalnatalaga.png" alt="TRIV Design & Construction">
+    </div>
+    <!-- Make sure the button is OUTSIDE the nav element -->
     <button class="menu-toggle" aria-label="Toggle menu">☰</button>
    <nav>
         <ul>
