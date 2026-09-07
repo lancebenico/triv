@@ -193,7 +193,7 @@ $departments = array_unique(array_column($allJobs, 'department'));
             <img src="../assets/images/triv-logo.png" alt="TRIV Design & Construction">
         </div>
         <div class="copyright">
-            <?php echo '© Copyright ' . date('Y') . ' TRIV Design & Construction | All Rights Reserved | Built by: Lance Bericio, Lewis Guicante, Noel Villanueva'; ?>
+            <?php echo '© Copyright ' . date('Y') . ' TRIV Design & Construction | All Rights Reserved | Built by: Lance Benico, Lewis Gecarane, Noel Villanueva'; ?>
         </div>
     </footer>
 
